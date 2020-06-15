@@ -301,7 +301,6 @@
         "none"
       ]
     }
-
   },
   "variables": {
     "tenantId": "[subscription().tenantId]",
@@ -624,7 +623,8 @@
       "apiVersion": "2019-10-01",
       "name": "[concat('PrivateDns-', variables('privateDnsGuid'))]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/privateEndpoints', concat(parameters('workspaceName'), '-PrivateEndpoint'))]"
+        "[resourceId('Microsoft.Network/privateEndpoints', concat(parameters('workspaceName'), '-PrivateEndpoint'))]",
+        "privatelink.api.azureml.ms"
       ],
       "properties": {
         "mode": "Incremental",
