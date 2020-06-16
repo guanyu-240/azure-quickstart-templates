@@ -318,21 +318,12 @@
       "westus2"
     ],
     "isLocationValid": "[or(equals(parameters('privateEndpointType'), 'none'), contains(variables('locationsPEAvailable'), parameters('location')))]",
-    "networkRuleSetBehindVNet": {
-      "defaultAction": "deny",
-      "virtualNetworkRules": [
-        {
-          "action": "Allow",
-          "id": "[variables('subnet')]"
-        }
-      ]
-    },
-    "defaultNetworkAcls": {
-      "networkAcls": "[variables('networkRuleSetBehindVNet')]"
-    },
-    "defaultNetworkRuleSet": {
-      "networkRuleSet": "[variables('networkRuleSetBehindVNet')]"
-    },
+    "virtualNetworkRules": [
+      {
+        "action": "Allow",
+        "id": "[variables('subnet')]"
+      }
+    ],
     "privateEndpointSettings": {
       "name": "[concat(parameters('workspaceName'), '-PrivateEndpoint')]",
       "properties": {
@@ -434,7 +425,11 @@
               "apiVersion": "2019-04-01",
               "name": "[parameters('storageAccountName')]",
               "location": "[parameters('location')]",
-              "properties": "[union(reference(variables('storageAccount'), '2019-04-01'), variables('defaultNetworkAcls'))]"
+              "properties": {
+                "networkAcls": {
+                  "virtualNetworkRules": "[concat(reference(variables('storageAccount'), '2019-04-01').networkAcls.virtualNetworkRules, variables('virtualNetworkRules'))]"
+                }
+              }
             }
           ]
         }
@@ -476,7 +471,11 @@
               "apiVersion": "2019-09-01",
               "name": "[parameters('keyVaultName')]",
               "location": "[parameters('location')]",
-              "properties": "[union(reference(variables('keyVault'), '2019-09-01'), variables('defaultNetworkAcls'))]"
+              "properties": {
+                "networkAcls": {
+                  "virtualNetworkRules": "[concat(reference(variables('keyVault'), '2019-09-01').networkAcls.virtualNetworkRules, variables('virtualNetworkRules'))]"
+                }
+              }
             }
           ]
         }
@@ -518,8 +517,12 @@
               "sku": {
                 "name": "Premium"
               },
-              "properties": "[if(equals(parameters('containerRegistryBehindVNet'), 'true'),
-                union(reference(variables('containerRegistry'), '2019-05-01'), variables('defaultNetworkRuleSet')), json('null'))]"
+              "properties": {
+                "networkRuleSet": {
+                  "virtualNetworkRules": "[if(equals(parameters('containerRegistryBehindVNet'), 'true'), 
+                    concat(reference(variables('containerRegistry'), '2019-04-01').networkRuleSet.virtualNetworkRules, variables('virtualNetworkRules')), json('null'))]"
+                }
+              }
             }
           ]
         }
