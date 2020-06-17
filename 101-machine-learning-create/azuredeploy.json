@@ -520,7 +520,7 @@
               "properties": {
                 "networkRuleSet": {
                   "virtualNetworkRules": "[if(equals(parameters('containerRegistryBehindVNet'), 'true'), 
-                    concat(reference(variables('containerRegistry'), '2019-04-01').networkRuleSet.virtualNetworkRules, variables('virtualNetworkRules')), json('null'))]"
+                    concat(reference(variables('containerRegistry'), '2019-05-01').networkRuleSet.virtualNetworkRules, variables('virtualNetworkRules')), json('null'))]"
                 }
               }
             }
